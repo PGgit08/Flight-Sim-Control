@@ -12,6 +12,8 @@ DIVISOR = 44
 # GEOFS plane speed
 speed = 0
 
+print("CLICK ENTER TO EXIT \n")
+
 def read():
     data = arduino.readline()
     
