@@ -1,12 +1,12 @@
 from serial import Serial
 import keyboard
 
-arduino = Serial(port='COM5', baudrate=9600, timeout=.01)
+arduino = Serial(port='COM5', baudrate=9600, timeout=.1)
 throttle_pos = 0
 init_pos = False
 
 def read():
-    data = arduino.read_until()
+    data = arduino.readline()
     
     try:
         return int(data.decode())
