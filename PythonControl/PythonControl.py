@@ -7,7 +7,7 @@ throttle_pos = 0
 init_pos = False
 
 # Divisor for throttle
-DIVISOR = 113
+DIVISOR = 44
 
 # GEOFS plane speed
 speed = 0
@@ -24,11 +24,11 @@ def read():
         return False
 
 while True:
-    if keyboard.is_pressed('space'):
+    if keyboard.is_pressed('enter'):
         arduino.close()
         break
     
-    recieved = read()
+    recieved = read() - 300
 
     # make sure that something was successfully recieved
     if recieved:
@@ -43,7 +43,12 @@ while True:
             throttle_pos = recieved
             old_speed = speed
             speed = throttle_pos // DIVISOR
-            print(speed)
+            
+            if speed < 0:
+                speed = 0
+            
+            if speed > 9:
+                speed = 9
 
             # if change in speed
             if speed != old_speed:
