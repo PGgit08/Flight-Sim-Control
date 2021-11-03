@@ -5,6 +5,7 @@
  * SOME GEOFS DATA
  * geofs.airplane.instance: get info on current airplane instance
  * controls: control data on current airplane
+ * for roll set recenter(geofs.airplane.instance) to false
  */
 
 async function connect(baudrate){
