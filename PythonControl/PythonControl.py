@@ -3,17 +3,46 @@ import keyboard
 import pyautogui
 import time
 
+# pyautogui settings
+pyautogui.FAILSAFE = False
+
 # connect to arduino and set up variables
 arduino = Serial(port='COM5', baudrate=9600, timeout=.1)
 
 # GEOFS values
 throttle = 0
-pitch = 0
-roll = 0
+pitch = 0.00
+roll = 0.00
 
-# Screen dimensions for mouse movement
+# screen dimensions for mouse movement
 WIDTH, HEIGHT = pyautogui.size()
+HALF_WIDTH = WIDTH / 2
+HALF_HEIGHT = HEIGHT / 2
 
+# move mouse function
+def move():
+    global mouseX, mouseY
+    pyautogui.moveTo(mouseX, mouseY)
+
+# click throttle values function
+def clickThrottle():
+    global throttle
+    keyboard.press_and_release(str(throttle))
+
+# mouse positions (initial)
+mouseX = HALF_WIDTH
+mouseY = HALF_HEIGHT
+
+# set initial positions through GUI
+move()
+clickThrottle()
+
+# old values to prevent unneeded movements
+old_throttle = throttle
+old_mouseX = mouseX
+old_mouseY = mouseY 
+
+# pre-loop message(s)
 print("CLICK ENTER TO EXIT \n")
 
 # read from device
@@ -52,9 +81,27 @@ while True:
         
         except Exception:
             pass
+
+
+        # get new mouseX and mouseY positions
+        mouseX = (roll * HALF_WIDTH) + HALF_WIDTH
+        mouseY = (pitch * HALF_HEIGHT) + HALF_HEIGHT
+
+        # old values to prevent unneeded movements
+        if(mouseX != old_mouseX):
+            move()
+            old_mouseX = mouseX
+
+        if(mouseY != old_mouseY):
+            move()
+            old_mouseY = mouseY
         
-        print(throttle, pitch, roll)
-        keyboard.press_and_release(str(throttle))
+        if(throttle != old_throttle):
+            clickThrottle()
+            old_throttle = throttle
+
+
+        # print(throttle, pitch, roll)
 
     # delay a bit and reply
     time.sleep(0.01)
