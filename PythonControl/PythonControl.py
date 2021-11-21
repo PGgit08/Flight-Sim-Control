@@ -1,60 +1,50 @@
 from serial import Serial
 import keyboard
 import pyautogui
+import time
 
+# connect to arduino and set up variables
 arduino = Serial(port='COM5', baudrate=9600, timeout=.1)
-throttle_pos = 0
-init_pos = False
 
-# Divisor for throttle
-DIVISOR = 44
-
-# GEOFS plane speed
-speed = 0
+# GEOFS values
+throttle = 0
+pitch = 0
+roll = 0
 
 print("CLICK ENTER TO EXIT \n")
 
+# read from device
 def read():
-    data = arduino.readline()
+    data = arduino.read_until(b"o")
     
-    try:
-        return int(data.decode())
-    
-    except Exception:
-        # Serial recieve takes time, therefore there might be nothing to decode
-        # at first, so this try/except is here
-        return False
+    return data.decode()
+
+# reply to arduino
+def reply():
+    arduino.write(b'o')
+
+# set geofs values from arduino
+def setValues(input_list):
+    global throttle, pitch, roll
+
+    throttle = int(input_list[0])
+    pitch = float(input_list[1])
+    roll = float(input_list[2])
 
 while True:
     if keyboard.is_pressed('enter'):
         arduino.close()
         break
-    
-    recieved = read() - 300
 
-    # make sure that something was successfully recieved
-    if recieved:
-        if not init_pos:
-            throttle_pos = recieved
-            init_pos = True
-            speed = throttle_pos // DIVISOR
-            print('init pos set')
-        
-        # if throttle pos changed(small range here)
-        if not (throttle_pos + 2 >= recieved >= throttle_pos - 2):
-            throttle_pos = recieved
-            old_speed = speed
-            speed = throttle_pos // DIVISOR
-            
-            if speed < 0:
-                speed = 0
-            
-            if speed > 9:
-                speed = 9
+    # read
+    recieved = read()
 
-            # if change in speed
-            if speed != old_speed:
-                pyautogui.press(str(speed))
-            
-            
-    
+    # make sure recieved something
+    if(len(recieved) > 0):
+        # make sure recievement was success
+        setValues(recieved.replace('o', '').split(','))
+        print(throttle, pitch, roll)
+
+    # delay a bit and reply
+    time.sleep(0.01)
+    reply()
