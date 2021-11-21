@@ -11,6 +11,9 @@ throttle = 0
 pitch = 0
 roll = 0
 
+# Screen dimensions for mouse movement
+WIDTH, HEIGHT = pyautogui.size()
+
 print("CLICK ENTER TO EXIT \n")
 
 # read from device
@@ -41,9 +44,17 @@ while True:
 
     # make sure recieved something
     if(len(recieved) > 0):
-        # make sure recievement was success
-        setValues(recieved.replace('o', '').split(','))
+        valList = recieved.replace('o', '').split(',')
+
+        # sometimes there might be a small error in recieving, so just use old working values
+        try:
+            setValues(valList)
+        
+        except Exception:
+            pass
+        
         print(throttle, pitch, roll)
+        keyboard.press_and_release(str(throttle))
 
     # delay a bit and reply
     time.sleep(0.01)
