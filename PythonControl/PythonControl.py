@@ -3,7 +3,7 @@ import keyboard
 import pyautogui
 import time
 
-# pyautogui settings
+
 pyautogui.FAILSAFE = False
 
 # connect to arduino and set up variables
@@ -59,7 +59,7 @@ def reply():
 def setValues(input_list):
     global throttle, pitch, roll
 
-    throttle = int(input_list[0])
+    throttle = int(input_list[0]) * -1 + 9
     pitch = float(input_list[1])
     roll = float(input_list[2])
 
@@ -83,7 +83,7 @@ while True:
             pass
 
 
-        # get new mouseX and mouseY positions
+        # get new mouseX and0 mouseY positions
         mouseX = (roll * HALF_WIDTH) + HALF_WIDTH
         mouseY = (pitch * HALF_HEIGHT) + HALF_HEIGHT
 
